@@ -171,14 +171,6 @@ func (cli *CLI) newJob(name, url, tag string) *batchv1.Job {
 				Name:  "INSECURE",
 				Value: "true",
 			},
-			{
-				Name:  "STORAGE_DRIVER",
-				Value: "vfs",
-			},
-			{
-				Name:  "BUILDAH_ISOLATION",
-				Value: "chroot",
-			},
 		},
 		VolumeMounts: []corev1.VolumeMount{
 			{
@@ -191,13 +183,7 @@ func (cli *CLI) newJob(name, url, tag string) *batchv1.Job {
 			},
 		},
 		SecurityContext: &corev1.SecurityContext{
-			AllowPrivilegeEscalation: ReturnPointerVal(true),
-			Capabilities: &corev1.Capabilities{
-				Add: []corev1.Capability{
-					"SETUID",
-					"SETGID",
-				},
-			},
+			Privileged: ReturnPointerVal(true),
 		},
 	}
 	job.Spec.Template.Spec.Containers = append(job.Spec.Template.Spec.Containers, buildContainer)

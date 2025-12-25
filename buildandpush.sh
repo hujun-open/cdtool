@@ -13,10 +13,10 @@ cat << END > Dockerfile
 FROM scratch
 ADD --chown=107:107 disk.img /disk/
 END
-buildah --storage-driver vfs build -f Dockerfile -t $TAG .
+buildah --storage-driver vfs --isolation chroot build -f Dockerfile -t $TAG .
 if [ -n "$INSECURE" ]; then
     echo "using insecure registry"
-    buildah --storage-driver vfs push --tls-verify=false $TAG
+    buildah --storage-driver vfs --isolation chroot push --tls-verify=false $TAG
 else
     authfile=""
     if [ -n "$AUTHFILE" ]; then
@@ -28,5 +28,5 @@ else
         echo "using custom CA"
         customca="--cert-dir /CA/"
     fi
-    buildah --storage-driver vfs push $authfile $customca $TAG
+    buildah --storage-driver vfs --isolation chroot push $authfile $customca $TAG
 fi
