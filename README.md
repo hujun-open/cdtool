@@ -14,5 +14,9 @@ since actual job is done via k8s job, so access to a k8s cluster is require to r
 
 ### disk image from remote source
 `cdtool upload remote <Src> <Tag> [flags]`; `Src` here could http, https, ftp URL supported by wget, while `TAG` is the name tag of target container disk image like `example.com/vmdisk:v1`
+
+example:
+`cdtool upload remote http://exampledownload.net/disk.qcow2 example.com/vmdisk:v1`
+
 ### local disk image file
-`cdtool upload local <File> <Tag> [flags]` `File` is the path of local disk image file, while `TAG` is the name tag of target container disk image like `example.com/vmdisk:v1`
+`cdtool upload local <File> <Tag> --listenaddr <addr> [flags]` `File` is the path of local disk image file,`addr` is an local interface address that is reachable from k8s workers, while `TAG` is the name tag of target container disk image like `example.com/vmdisk:v1`

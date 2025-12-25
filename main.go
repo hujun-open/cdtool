@@ -69,6 +69,7 @@ func defCLI() *CLI {
 	r.KubeCfgPath = kpath
 	r.Upload.NS = "default"
 	r.Upload.DownloadImage = "busybox:stable"
+	r.Upload.BuildImage = "ghcr.io/hujun-open/cdtool:latest"
 	r.Upload.Local.HttpPort = defaultHTTPPort
 	return r
 }
@@ -260,11 +261,14 @@ func (cli *CLI) ShowJob(cmd *cobra.Command, args []string) {
 	defer w.Flush()
 	fmt.Fprintln(w, "name\tsrc\ttag\tsucceed\tfinish time")
 	for _, job := range jobs.Items {
-
+		finishTImeStr := "n/a"
+		if job.Status.CompletionTime != nil {
+			finishTImeStr = job.Status.CompletionTime.Format(time.DateTime)
+		}
 		fmt.Fprintf(w, "%v\t%v\t%v\t%v\t%v\n", job.Namespace+"/"+job.Name,
 			job.Spec.Template.Spec.InitContainers[0].Env[0].Value,
 			job.Spec.Template.Spec.Containers[0].Env[0].Value,
-			job.Status.Succeeded == 1, job.Status.CompletionTime.Format(time.DateTime))
+			job.Status.Succeeded == 1, finishTImeStr)
 	}
 
 }
@@ -288,7 +292,13 @@ func (cli *CLI) ListJobs(cmd *cobra.Command, args []string) {
 		if job.Status.Succeeded == 1 && !cli.List.All {
 			continue
 		}
-		fmt.Fprintf(w, "%v\t%v\t%v\t%v\n", job.Namespace+"/"+job.Name, job.Status.Failed, job.Status.Succeeded == 1, job.Status.CompletionTime.Format(time.DateTime))
+		finishTImeStr := "n/a"
+		if job.Status.CompletionTime != nil {
+			finishTImeStr = job.Status.CompletionTime.Format(time.DateTime)
+		}
+		fmt.Fprintf(w, "%v\t%v\t%v\t%v\n", job.Namespace+"/"+job.Name,
+			job.Status.Failed, job.Status.Succeeded == 1,
+			finishTImeStr)
 	}
 
 }
